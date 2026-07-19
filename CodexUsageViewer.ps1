@@ -13,9 +13,11 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 [xml]$xaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Codex Usage" Width="343" Height="159" MinWidth="343" MaxWidth="343"
+        Title="Codex Usage" Width="343" Height="168" MinWidth="343" MaxWidth="343"
         WindowStartupLocation="CenterScreen" Background="#0B0F14" Foreground="#F5F7FA"
-        FontFamily="Segoe UI" ResizeMode="NoResize" ShowInTaskbar="True">
+        FontFamily="Segoe UI" ResizeMode="NoResize" ShowInTaskbar="True"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
   <Window.Resources>
     <Style TargetType="TextBlock">
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
@@ -34,7 +36,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
       <Setter Property="BorderBrush" Value="#354356"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="Padding" Value="7,2"/>
-      <Setter Property="FontSize" Value="9"/>
+      <Setter Property="FontSize" Value="10"/>
       <Setter Property="Cursor" Value="Hand"/>
     </Style>
   </Window.Resources>
@@ -59,16 +61,16 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
           <Border Background="#15382F" CornerRadius="7" Padding="6,2" Margin="0,0,7,0">
-            <TextBlock x:Name="PlanText" Text="—" Foreground="#69E6B3" FontSize="8" FontWeight="Bold"/>
+            <TextBlock x:Name="PlanText" Text="—" Foreground="#69E6B3" FontSize="9" FontWeight="Bold"/>
           </Border>
-          <TextBlock Grid.Column="1" x:Name="PrimaryTitle" Text="Finestra principale" Foreground="#AAB5C4" FontSize="10"/>
-          <TextBlock Grid.Column="2" x:Name="PrimaryRemaining" Text="—" FontSize="19" FontWeight="Bold"/>
+          <TextBlock Grid.Column="1" x:Name="PrimaryTitle" Text="Finestra principale" Foreground="#B8C2CF" FontSize="11"/>
+          <TextBlock Grid.Column="2" x:Name="PrimaryRemaining" Text="—" FontSize="20" FontWeight="Bold"/>
         </Grid>
         <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,3"/>
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-          <TextBlock x:Name="PrimaryUsage" Text="Caricamento…" Foreground="#CDD5DF" FontSize="9"/>
-          <TextBlock Grid.Column="1" x:Name="PrimaryReset" Text="" Foreground="#8290A3" FontSize="9" HorizontalAlignment="Right"/>
+          <TextBlock x:Name="PrimaryUsage" Text="Caricamento…" Foreground="#E0E6EE" FontSize="10"/>
+          <TextBlock Grid.Column="1" x:Name="PrimaryReset" Text="" Foreground="#9AA7B8" FontSize="10" HorizontalAlignment="Right"/>
         </Grid>
       </StackPanel>
     </Border>
@@ -77,26 +79,26 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             CornerRadius="6" Padding="7,3" Margin="0,0,0,4" Visibility="Collapsed">
       <Grid>
         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-        <TextBlock x:Name="SecondaryTitle" Text="Secondaria" Foreground="#AAB5C4" FontSize="9" Margin="0,0,6,0"/>
+        <TextBlock x:Name="SecondaryTitle" Text="Secondaria" Foreground="#B8C2CF" FontSize="10" Margin="0,0,6,0"/>
         <ProgressBar Grid.Column="1" x:Name="SecondaryProgress" Value="0" Foreground="#5AD6A0" VerticalAlignment="Center"/>
-        <TextBlock Grid.Column="2" x:Name="SecondaryReset" Text="" Foreground="#8290A3" FontSize="8" Margin="6,0,0,0"/>
+        <TextBlock Grid.Column="2" x:Name="SecondaryReset" Text="" Foreground="#9AA7B8" FontSize="9" Margin="6,0,0,0"/>
         <StackPanel Grid.Column="3" Orientation="Horizontal">
-          <TextBlock x:Name="SecondaryUsage" Text="" Foreground="#CDD5DF" FontSize="8" Margin="0,0,5,0"/>
-          <TextBlock x:Name="SecondaryRemaining" Text="—" FontSize="11" FontWeight="Bold"/>
+          <TextBlock x:Name="SecondaryUsage" Text="" Foreground="#E0E6EE" FontSize="9" Margin="0,0,5,0"/>
+          <TextBlock x:Name="SecondaryRemaining" Text="—" FontSize="12" FontWeight="Bold"/>
         </StackPanel>
       </Grid>
     </Border>
 
     <Grid Grid.Row="3" Margin="2,0,2,3">
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <TextBlock x:Name="CreditsText" Text="Crediti: —" Foreground="#AAB5C4" FontSize="9"/>
-      <TextBlock Grid.Column="1" x:Name="ResetCreditsText" Text="" Foreground="#69E6B3" FontSize="9" Visibility="Collapsed"/>
+      <TextBlock x:Name="CreditsText" Text="Crediti: —" Foreground="#C4CEDA" FontSize="10"/>
+      <TextBlock Grid.Column="1" x:Name="ResetCreditsText" Text="" Foreground="#69E6B3" FontSize="9" FontWeight="SemiBold" Visibility="Collapsed"/>
     </Grid>
 
     <Grid Grid.Row="4" VerticalAlignment="Bottom">
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <TextBlock x:Name="StatusText" Text="Connessione a Codex…" Foreground="#697688" FontSize="8"/>
-      <CheckBox Grid.Column="1" x:Name="TopmostCheck" Content="In primo piano" Foreground="#929EAD" FontSize="8" Margin="5,0,7,0" VerticalAlignment="Center"/>
+      <TextBlock x:Name="StatusText" Text="Connessione a Codex…" Foreground="#8491A2" FontSize="9"/>
+      <CheckBox Grid.Column="1" x:Name="TopmostCheck" Content="In primo piano" Foreground="#AAB5C4" FontSize="9" Margin="5,0,7,0" VerticalAlignment="Center"/>
       <Button x:Name="RefreshButton" Grid.Column="2" Content="Aggiorna"/>
     </Grid>
   </Grid>
@@ -118,23 +120,26 @@ $script:queryJob = $null
 $script:nextRefresh = [DateTime]::MinValue
 $script:primaryResetAt = $null
 $script:secondaryResetAt = $null
+$script:resetCreditCount = 0
+$script:resetCreditExpiresAt = $null
 $script:lastUpdatedAt = $null
 
 $settingsDir = Join-Path $env:LOCALAPPDATA 'CodexUsageViewer'
 $settingsPath = Join-Path $settingsDir 'settings.json'
 
-function Get-WindowLabel([Nullable[long]]$minutes, [string]$fallback) {
+function Get-WindowLabel($minutes, [string]$fallback) {
     if ($null -eq $minutes) { return $fallback }
-    if ($minutes.Value -eq 60) { return 'Finestra 1 ora' }
-    if (($minutes.Value % 1440) -eq 0) {
-        $days = [int]($minutes.Value / 1440)
+    $minuteCount = [long]$minutes
+    if ($minuteCount -eq 60) { return 'Finestra 1 ora' }
+    if (($minuteCount % 1440) -eq 0) {
+        $days = [int]($minuteCount / 1440)
         return "Finestra $days giorni"
     }
-    if (($minutes.Value % 60) -eq 0) {
-        $hours = [int]($minutes.Value / 60)
+    if (($minuteCount % 60) -eq 0) {
+        $hours = [int]($minuteCount / 60)
         return "Finestra $hours ore"
     }
-    return "Finestra $($minutes.Value) minuti"
+    return "Finestra $minuteCount minuti"
 }
 
 function Get-ProgressBrush([int]$usedPercent) {
@@ -161,10 +166,33 @@ function Format-ResetCountdown($resetAt) {
     return ('Reset {0:HH:mm} · {1}m' -f $resetAt, [math]::Max(1, [math]::Ceiling($remaining.TotalMinutes)))
 }
 
+function Format-CreditExpiry($expiresAt) {
+    if ($null -eq $expiresAt) { return $null }
+    $remaining = $expiresAt - [DateTimeOffset]::Now
+    if ($remaining.TotalSeconds -le 0) { return 'scadenza in corso' }
+    if ($remaining.TotalDays -ge 1) {
+        return ('sc. {0:dd/MM HH:mm} · {1}g {2}h' -f $expiresAt, [math]::Floor($remaining.TotalDays), $remaining.Hours)
+    }
+    if ($remaining.TotalHours -ge 1) {
+        return ('sc. {0:HH:mm} · {1}h {2}m' -f $expiresAt, [math]::Floor($remaining.TotalHours), $remaining.Minutes)
+    }
+    return ('sc. {0:HH:mm} · {1}m' -f $expiresAt, [math]::Max(1, [math]::Ceiling($remaining.TotalMinutes)))
+}
+
 function Update-Countdowns {
     $PrimaryReset.Text = Format-ResetCountdown $script:primaryResetAt
     if ($SecondaryCard.Visibility -eq [Windows.Visibility]::Visible) {
         $SecondaryReset.Text = Format-ResetCountdown $script:secondaryResetAt
+    }
+    if ($script:resetCreditCount -gt 0) {
+        $label = if ($script:resetCreditCount -eq 1) { '1 reset disp.' } else { "$($script:resetCreditCount) reset disp." }
+        $expiry = Format-CreditExpiry $script:resetCreditExpiresAt
+        $ResetCreditsText.Text = if ($null -ne $expiry) { "$label · $expiry" } else { $label }
+        $ResetCreditsText.ToolTip = if ($null -ne $script:resetCreditExpiresAt) {
+            'Il prossimo reset scade il {0:dddd d MMMM yyyy alle HH:mm}.' -f $script:resetCreditExpiresAt
+        } else {
+            'Codex non ha indicato una data di scadenza.'
+        }
     }
 }
 
@@ -198,11 +226,11 @@ function Set-WindowData($data) {
         $SecondaryProgress.Foreground = Get-ProgressBrush $used
         $SecondaryUsage.Text = "$used% usato"
         $script:secondaryResetAt = Convert-ResetTime $limit.secondary.resetsAt
-        $window.Height = 187
+        $window.Height = 200
     } else {
         $SecondaryCard.Visibility = [Windows.Visibility]::Collapsed
         $script:secondaryResetAt = $null
-        $window.Height = 159
+        $window.Height = 168
     }
 
     if ($null -eq $limit.credits) {
@@ -218,11 +246,22 @@ function Set-WindowData($data) {
 
     $resetCount = 0
     if ($null -ne $data.rateLimitResetCredits) { $resetCount = [int]$data.rateLimitResetCredits.availableCount }
+    $script:resetCreditCount = $resetCount
+    $script:resetCreditExpiresAt = $null
     if ($resetCount -gt 0) {
         $ResetCreditsText.Visibility = [Windows.Visibility]::Visible
-        $ResetCreditsText.Text = if ($resetCount -eq 1) { '1 reset disponibile' } else { "$resetCount reset disponibili" }
+        if ($null -ne $data.rateLimitResetCredits.credits) {
+            $expirations = @(
+                $data.rateLimitResetCredits.credits |
+                    Where-Object { $_.status -eq 'available' -and $null -ne $_.expiresAt } |
+                    ForEach-Object { Convert-ResetTime $_.expiresAt } |
+                    Sort-Object
+            )
+            if ($expirations.Count -gt 0) { $script:resetCreditExpiresAt = $expirations[0] }
+        }
     } else {
         $ResetCreditsText.Visibility = [Windows.Visibility]::Collapsed
+        $ResetCreditsText.ToolTip = $null
     }
 
     $script:lastUpdatedAt = [DateTime]::Now
