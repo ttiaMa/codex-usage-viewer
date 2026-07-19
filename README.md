@@ -8,7 +8,11 @@ nascondere informazioni.
 
 ## Avvio
 
-Fai doppio clic su `Start-CodexUsageViewer.cmd`.
+Fai doppio clic su `Start-CodexUsageViewer.vbs`. Il launcher avvia il widget
+senza mostrare o mantenere aperta una finestra di PowerShell/Windows Terminal.
+
+Il file `Start-CodexUsageViewer.cmd` rimane disponibile come launcher alternativo
+e inoltra a sua volta l'avvio al launcher invisibile.
 
 La finestra mostra:
 
