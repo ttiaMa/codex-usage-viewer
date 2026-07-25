@@ -13,7 +13,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 [xml]$xaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Codex Usage" Width="343" Height="168" MinWidth="343" MaxWidth="343"
+        Title="Codex Usage" Width="360" Height="154" MinWidth="360" MaxWidth="360"
         WindowStartupLocation="CenterScreen" Background="#0B0F14" Foreground="#F5F7FA"
         FontFamily="Segoe UI" ResizeMode="NoResize" ShowInTaskbar="True"
         UseLayoutRounding="True" SnapsToDevicePixels="True"
@@ -30,15 +30,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
       <Setter Property="Background" Value="#263140"/>
       <Setter Property="BorderThickness" Value="0"/>
     </Style>
-    <Style TargetType="Button">
-      <Setter Property="Background" Value="#202A37"/>
-      <Setter Property="Foreground" Value="#DCE3EC"/>
-      <Setter Property="BorderBrush" Value="#354356"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="Padding" Value="7,2"/>
-      <Setter Property="FontSize" Value="10"/>
-      <Setter Property="Cursor" Value="Hand"/>
-    </Style>
   </Window.Resources>
 
   <Grid Margin="9,7,9,7">
@@ -47,7 +38,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
     <Border x:Name="ErrorBorder" Grid.Row="0" Background="#421C25" BorderBrush="#793243"
@@ -66,11 +56,13 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
           <TextBlock Grid.Column="1" x:Name="PrimaryTitle" Text="Finestra principale" Foreground="#B8C2CF" FontSize="11"/>
           <TextBlock Grid.Column="2" x:Name="PrimaryRemaining" Text="—" FontSize="20" FontWeight="Bold"/>
         </Grid>
-        <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,3"/>
+        <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,2" ToolTip="Quota Codex utilizzata"/>
+        <ProgressBar x:Name="WeeklyResetProgress" Value="0" Height="4" Foreground="#629BFF" Margin="0,0,0,3"
+                     ToolTip="Tempo residuo fino al prossimo reset settimanale"/>
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
           <TextBlock x:Name="PrimaryUsage" Text="Caricamento…" Foreground="#E0E6EE" FontSize="10"/>
-          <TextBlock Grid.Column="1" x:Name="PrimaryReset" Text="" Foreground="#9AA7B8" FontSize="10" HorizontalAlignment="Right"/>
+          <TextBlock Grid.Column="1" x:Name="PrimaryReset" Text="" Foreground="#78A9FF" FontSize="10" HorizontalAlignment="Right"/>
         </Grid>
       </StackPanel>
     </Border>
@@ -95,12 +87,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
       <TextBlock Grid.Column="1" x:Name="ResetCreditsText" Text="" Foreground="#69E6B3" FontSize="9" FontWeight="SemiBold" Visibility="Collapsed"/>
     </Grid>
 
-    <Grid Grid.Row="4" VerticalAlignment="Bottom">
-      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <TextBlock x:Name="StatusText" Text="Connessione a Codex…" Foreground="#8491A2" FontSize="9"/>
-      <CheckBox Grid.Column="1" x:Name="TopmostCheck" Content="In primo piano" Foreground="#AAB5C4" FontSize="9" Margin="5,0,7,0" VerticalAlignment="Center"/>
-      <Button x:Name="RefreshButton" Grid.Column="2" Content="Aggiorna"/>
-    </Grid>
   </Grid>
 </Window>
 '@
@@ -110,19 +96,19 @@ $window = [Windows.Markup.XamlReader]::Load($reader)
 
 @(
     'PlanText', 'ErrorBorder', 'ErrorText', 'PrimaryTitle', 'PrimaryRemaining',
-    'PrimaryProgress', 'PrimaryUsage', 'PrimaryReset', 'SecondaryCard',
+    'PrimaryProgress', 'WeeklyResetProgress', 'PrimaryUsage', 'PrimaryReset', 'SecondaryCard',
     'SecondaryTitle', 'SecondaryRemaining', 'SecondaryProgress', 'SecondaryUsage',
-    'SecondaryReset', 'CreditsText', 'ResetCreditsText', 'StatusText',
-    'TopmostCheck', 'RefreshButton'
+    'SecondaryReset', 'CreditsText', 'ResetCreditsText'
 ) | ForEach-Object { Set-Variable -Name $_ -Value $window.FindName($_) -Scope Script }
 
 $script:queryJob = $null
 $script:nextRefresh = [DateTime]::MinValue
 $script:primaryResetAt = $null
 $script:secondaryResetAt = $null
+$script:weeklyResetAt = $null
+$script:weeklyWindowMinutes = $null
 $script:resetCreditCount = 0
 $script:resetCreditExpiresAt = $null
-$script:lastUpdatedAt = $null
 
 $settingsDir = Join-Path $env:LOCALAPPDATA 'CodexUsageViewer'
 $settingsPath = Join-Path $settingsDir 'settings.json'
@@ -181,6 +167,16 @@ function Format-CreditExpiry($expiresAt) {
 
 function Update-Countdowns {
     $PrimaryReset.Text = Format-ResetCountdown $script:primaryResetAt
+    if ($null -ne $script:weeklyResetAt -and $null -ne $script:weeklyWindowMinutes -and $script:weeklyWindowMinutes -gt 0) {
+        $remainingSeconds = ($script:weeklyResetAt - [DateTimeOffset]::Now).TotalSeconds
+        $windowSeconds = [double]$script:weeklyWindowMinutes * 60
+        $remainingPercent = [math]::Max(0, [math]::Min(100, ($remainingSeconds / $windowSeconds) * 100))
+        $WeeklyResetProgress.Value = $remainingPercent
+        $WeeklyResetProgress.ToolTip = 'Tempo residuo al reset settimanale: {0:N0}%' -f $remainingPercent
+    } else {
+        $WeeklyResetProgress.Value = 0
+        $WeeklyResetProgress.ToolTip = 'Reset settimanale non indicato da Codex'
+    }
     if ($SecondaryCard.Visibility -eq [Windows.Visibility]::Visible) {
         $SecondaryReset.Text = Format-ResetCountdown $script:secondaryResetAt
     }
@@ -226,11 +222,26 @@ function Set-WindowData($data) {
         $SecondaryProgress.Foreground = Get-ProgressBrush $used
         $SecondaryUsage.Text = "$used% usato"
         $script:secondaryResetAt = Convert-ResetTime $limit.secondary.resetsAt
-        $window.Height = 200
+        $window.Height = 186
     } else {
         $SecondaryCard.Visibility = [Windows.Visibility]::Collapsed
         $script:secondaryResetAt = $null
-        $window.Height = 168
+        $window.Height = 154
+    }
+
+    $candidateWindows = @()
+    if ($null -ne $limit.primary) { $candidateWindows += $limit.primary }
+    if ($null -ne $limit.secondary) { $candidateWindows += $limit.secondary }
+    $weeklyWindow = $candidateWindows |
+        Where-Object { $null -ne $_.windowDurationMins -and [long]$_.windowDurationMins -ge 1440 } |
+        Sort-Object { [long]$_.windowDurationMins } -Descending |
+        Select-Object -First 1
+    if ($null -ne $weeklyWindow) {
+        $script:weeklyWindowMinutes = [long]$weeklyWindow.windowDurationMins
+        $script:weeklyResetAt = Convert-ResetTime $weeklyWindow.resetsAt
+    } else {
+        $script:weeklyWindowMinutes = $null
+        $script:weeklyResetAt = $null
     }
 
     if ($null -eq $limit.credits) {
@@ -264,8 +275,6 @@ function Set-WindowData($data) {
         $ResetCreditsText.ToolTip = $null
     }
 
-    $script:lastUpdatedAt = [DateTime]::Now
-    $StatusText.Text = "Aggiornato $($script:lastUpdatedAt.ToString('HH:mm:ss')) · ogni $RefreshSeconds s"
     $ErrorBorder.Visibility = [Windows.Visibility]::Collapsed
     Update-Countdowns
 }
@@ -282,8 +291,6 @@ function Start-UsageQuery {
         return
     }
 
-    $StatusText.Text = 'Lettura usage da Codex…'
-    $RefreshButton.IsEnabled = $false
     $script:queryJob = Start-Job -ArgumentList $codexPath -ScriptBlock {
         param($Executable)
         $ErrorActionPreference = 'Stop'
@@ -344,12 +351,10 @@ function Complete-UsageQuery {
     } catch {
         $ErrorText.Text = "Impossibile aggiornare: $($_.Exception.Message)"
         $ErrorBorder.Visibility = [Windows.Visibility]::Visible
-        $StatusText.Text = "Aggiornamento fallito alle $([DateTime]::Now.ToString('HH:mm:ss'))"
     } finally {
         Remove-Job -Job $script:queryJob -Force -ErrorAction SilentlyContinue
         $script:queryJob = $null
         $script:nextRefresh = [DateTime]::Now.AddSeconds($RefreshSeconds)
-        $RefreshButton.IsEnabled = $true
     }
 }
 
@@ -361,17 +366,8 @@ if (Test-Path -LiteralPath $settingsPath) {
             $window.Left = [double]$settings.Left
             $window.Top = [double]$settings.Top
         }
-        $window.Topmost = [bool]$settings.Topmost
-        $TopmostCheck.IsChecked = $window.Topmost
     } catch { }
 }
-
-$TopmostCheck.Add_Checked({ $window.Topmost = $true })
-$TopmostCheck.Add_Unchecked({ $window.Topmost = $false })
-$RefreshButton.Add_Click({
-    $script:nextRefresh = [DateTime]::MinValue
-    Start-UsageQuery
-})
 
 $timer = [Windows.Threading.DispatcherTimer]::new()
 $timer.Interval = [TimeSpan]::FromMilliseconds(500)
@@ -392,7 +388,6 @@ $window.Add_Closing({
         [pscustomobject]@{
             Left = $window.Left
             Top = $window.Top
-            Topmost = $window.Topmost
         } | ConvertTo-Json | Set-Content -LiteralPath $settingsPath -Encoding UTF8
     } catch { }
 })
