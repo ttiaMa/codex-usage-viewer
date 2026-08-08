@@ -58,7 +58,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
         </Grid>
         <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,2" ToolTip="Quota Codex utilizzata"/>
         <ProgressBar x:Name="WeeklyResetProgress" Value="0" Height="4" Foreground="#629BFF" Margin="0,0,0,3"
-                     ToolTip="Tempo residuo fino al prossimo reset settimanale"/>
+                     ToolTip="Avanzamento della settimana fino al prossimo reset"/>
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
           <TextBlock x:Name="PrimaryUsage" Text="Caricamento…" Foreground="#E0E6EE" FontSize="10"/>
@@ -171,8 +171,9 @@ function Update-Countdowns {
         $remainingSeconds = ($script:weeklyResetAt - [DateTimeOffset]::Now).TotalSeconds
         $windowSeconds = [double]$script:weeklyWindowMinutes * 60
         $remainingPercent = [math]::Max(0, [math]::Min(100, ($remainingSeconds / $windowSeconds) * 100))
-        $WeeklyResetProgress.Value = $remainingPercent
-        $WeeklyResetProgress.ToolTip = 'Tempo residuo al reset settimanale: {0:N0}%' -f $remainingPercent
+        $elapsedPercent = 100 - $remainingPercent
+        $WeeklyResetProgress.Value = $elapsedPercent
+        $WeeklyResetProgress.ToolTip = 'Settimana trascorsa: {0:N0}%' -f $elapsedPercent
     } else {
         $WeeklyResetProgress.Value = 0
         $WeeklyResetProgress.ToolTip = 'Reset settimanale non indicato da Codex'
