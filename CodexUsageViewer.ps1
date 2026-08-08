@@ -47,7 +47,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
       <Button x:Name="CloseButton" Content="×" Width="24" Height="18" HorizontalAlignment="Right"
               Padding="0" BorderThickness="0" Background="Transparent" Foreground="#9AA7B8"
               FontFamily="Segoe UI" FontSize="13" FontWeight="SemiBold" Cursor="Hand"
-              ToolTip="Chiudi"/>
+              ToolTip="Close"/>
     </Grid>
 
   <Grid Grid.Row="1" Margin="8,4,8,6">
@@ -71,15 +71,15 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
           <Border Background="#15382F" CornerRadius="7" Padding="6,2" Margin="0,0,7,0">
             <TextBlock x:Name="PlanText" Text="—" Foreground="#69E6B3" FontSize="9" FontWeight="Bold"/>
           </Border>
-          <TextBlock Grid.Column="1" x:Name="PrimaryTitle" Text="Finestra principale" Foreground="#B8C2CF" FontSize="11"/>
+          <TextBlock Grid.Column="1" x:Name="PrimaryTitle" Text="Primary window" Foreground="#B8C2CF" FontSize="11"/>
           <TextBlock Grid.Column="2" x:Name="PrimaryRemaining" Text="—" FontSize="20" FontWeight="Bold"/>
         </Grid>
-        <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,2" ToolTip="Quota Codex utilizzata"/>
+        <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,2" ToolTip="Codex quota used"/>
         <ProgressBar x:Name="WeeklyResetProgress" Value="0" Height="4" Foreground="#629BFF" Margin="0,0,0,4"
-                     ToolTip="Avanzamento della settimana fino al prossimo reset"/>
+                     ToolTip="Weekly progress until the next reset"/>
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-          <TextBlock x:Name="PrimaryUsage" Text="Caricamento…" Foreground="#E0E6EE" FontSize="10"/>
+          <TextBlock x:Name="PrimaryUsage" Text="Loading…" Foreground="#E0E6EE" FontSize="10"/>
           <TextBlock Grid.Column="1" x:Name="PrimaryReset" Text="" Foreground="#78A9FF" FontSize="10" HorizontalAlignment="Right"/>
         </Grid>
       </StackPanel>
@@ -89,7 +89,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             CornerRadius="6" Padding="8,4" Margin="0,0,0,6" Visibility="Collapsed">
       <Grid>
         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-        <TextBlock x:Name="SecondaryTitle" Text="Secondaria" Foreground="#B8C2CF" FontSize="10" Margin="0,0,6,0"/>
+        <TextBlock x:Name="SecondaryTitle" Text="Secondary" Foreground="#B8C2CF" FontSize="10" Margin="0,0,6,0"/>
         <ProgressBar Grid.Column="1" x:Name="SecondaryProgress" Value="0" Foreground="#5AD6A0" VerticalAlignment="Center"/>
         <TextBlock Grid.Column="2" x:Name="SecondaryReset" Text="" Foreground="#9AA7B8" FontSize="9" Margin="6,0,0,0"/>
         <StackPanel Grid.Column="3" Orientation="Horizontal">
@@ -101,7 +101,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 
     <Grid Grid.Row="3" Margin="2,0,2,0">
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <TextBlock x:Name="CreditsText" Text="Crediti: —" Foreground="#C4CEDA" FontSize="10"/>
+      <TextBlock x:Name="CreditsText" Text="Credits: —" Foreground="#C4CEDA" FontSize="10"/>
       <TextBlock Grid.Column="1" x:Name="ResetCreditsText" Text="" Foreground="#69E6B3" FontSize="9" FontWeight="SemiBold" Visibility="Collapsed"/>
     </Grid>
 
@@ -145,16 +145,19 @@ $settingsPath = Join-Path $settingsDir 'settings.json'
 function Get-WindowLabel($minutes, [string]$fallback) {
     if ($null -eq $minutes) { return $fallback }
     $minuteCount = [long]$minutes
-    if ($minuteCount -eq 60) { return 'Finestra 1 ora' }
+    if ($minuteCount -eq 60) { return '1-hour window' }
     if (($minuteCount % 1440) -eq 0) {
         $days = [int]($minuteCount / 1440)
-        return "Finestra $days giorni"
+        if ($days -eq 1) { return '1-day window' }
+        return "$days-day window"
     }
     if (($minuteCount % 60) -eq 0) {
         $hours = [int]($minuteCount / 60)
-        return "Finestra $hours ore"
+        if ($hours -eq 1) { return '1-hour window' }
+        return "$hours-hour window"
     }
-    return "Finestra $minuteCount minuti"
+    if ($minuteCount -eq 1) { return '1-minute window' }
+    return "$minuteCount-minute window"
 }
 
 function Get-ProgressBrush([int]$usedPercent) {
@@ -169,11 +172,11 @@ function Convert-ResetTime($unixSeconds) {
 }
 
 function Format-ResetCountdown($resetAt) {
-    if ($null -eq $resetAt) { return 'Reset non indicato' }
+    if ($null -eq $resetAt) { return 'Reset unavailable' }
     $remaining = $resetAt - [DateTimeOffset]::Now
-    if ($remaining.TotalSeconds -le 0) { return 'Reset in corso…' }
+    if ($remaining.TotalSeconds -le 0) { return 'Resetting…' }
     if ($remaining.TotalDays -ge 1) {
-        return ('Reset {0:dd/MM HH:mm} · {1}g {2}h' -f $resetAt, [math]::Floor($remaining.TotalDays), $remaining.Hours)
+        return ('Reset {0:MM/dd HH:mm} · {1}d {2}h' -f $resetAt, [math]::Floor($remaining.TotalDays), $remaining.Hours)
     }
     if ($remaining.TotalHours -ge 1) {
         return ('Reset {0:HH:mm} · {1}h {2}m' -f $resetAt, [math]::Floor($remaining.TotalHours), $remaining.Minutes)
@@ -184,14 +187,14 @@ function Format-ResetCountdown($resetAt) {
 function Format-CreditExpiry($expiresAt) {
     if ($null -eq $expiresAt) { return $null }
     $remaining = $expiresAt - [DateTimeOffset]::Now
-    if ($remaining.TotalSeconds -le 0) { return 'scadenza in corso' }
+    if ($remaining.TotalSeconds -le 0) { return 'expiring now' }
     if ($remaining.TotalDays -ge 1) {
-        return ('sc. {0:dd/MM HH:mm} · {1}g {2}h' -f $expiresAt, [math]::Floor($remaining.TotalDays), $remaining.Hours)
+        return ('exp. {0:MM/dd HH:mm} · {1}d {2}h' -f $expiresAt, [math]::Floor($remaining.TotalDays), $remaining.Hours)
     }
     if ($remaining.TotalHours -ge 1) {
-        return ('sc. {0:HH:mm} · {1}h {2}m' -f $expiresAt, [math]::Floor($remaining.TotalHours), $remaining.Minutes)
+        return ('exp. {0:HH:mm} · {1}h {2}m' -f $expiresAt, [math]::Floor($remaining.TotalHours), $remaining.Minutes)
     }
-    return ('sc. {0:HH:mm} · {1}m' -f $expiresAt, [math]::Max(1, [math]::Ceiling($remaining.TotalMinutes)))
+    return ('exp. {0:HH:mm} · {1}m' -f $expiresAt, [math]::Max(1, [math]::Ceiling($remaining.TotalMinutes)))
 }
 
 function Update-Countdowns {
@@ -202,22 +205,22 @@ function Update-Countdowns {
         $remainingPercent = [math]::Max(0, [math]::Min(100, ($remainingSeconds / $windowSeconds) * 100))
         $elapsedPercent = 100 - $remainingPercent
         $WeeklyResetProgress.Value = $elapsedPercent
-        $WeeklyResetProgress.ToolTip = 'Settimana trascorsa: {0:N0}%' -f $elapsedPercent
+        $WeeklyResetProgress.ToolTip = 'Week elapsed: {0:N0}%' -f $elapsedPercent
     } else {
         $WeeklyResetProgress.Value = 0
-        $WeeklyResetProgress.ToolTip = 'Reset settimanale non indicato da Codex'
+        $WeeklyResetProgress.ToolTip = 'Weekly reset unavailable from Codex'
     }
     if ($SecondaryCard.Visibility -eq [Windows.Visibility]::Visible) {
         $SecondaryReset.Text = Format-ResetCountdown $script:secondaryResetAt
     }
     if ($script:resetCreditCount -gt 0) {
-        $label = if ($script:resetCreditCount -eq 1) { '1 reset disp.' } else { "$($script:resetCreditCount) reset disp." }
+        $label = if ($script:resetCreditCount -eq 1) { '1 reset avail.' } else { "$($script:resetCreditCount) resets avail." }
         $expiry = Format-CreditExpiry $script:resetCreditExpiresAt
         $ResetCreditsText.Text = if ($null -ne $expiry) { "$label · $expiry" } else { $label }
         $ResetCreditsText.ToolTip = if ($null -ne $script:resetCreditExpiresAt) {
-            'Il prossimo reset scade il {0:dddd d MMMM yyyy alle HH:mm}.' -f $script:resetCreditExpiresAt
+            'The next reset expires on {0:MM/dd/yyyy HH:mm}.' -f $script:resetCreditExpiresAt
         } else {
-            'Codex non ha indicato una data di scadenza.'
+            'No reset expiration date provided by Codex.'
         }
     }
 }
@@ -227,18 +230,18 @@ function Set-WindowData($data) {
     if ($null -ne $data.rateLimitsByLimitId -and $null -ne $data.rateLimitsByLimitId.codex) {
         $limit = $data.rateLimitsByLimitId.codex
     }
-    if ($null -eq $limit) { throw 'Codex non ha restituito alcun limite per questo account.' }
+    if ($null -eq $limit) { throw 'Codex returned no rate limit data for this account.' }
 
     $PlanText.Text = if ($null -ne $limit.planType) { ([string]$limit.planType).ToUpperInvariant() } else { 'CODEX' }
 
     if ($null -ne $limit.primary) {
         $used = [math]::Max(0, [math]::Min(100, [int]$limit.primary.usedPercent))
         $remaining = 100 - $used
-        $PrimaryTitle.Text = Get-WindowLabel $limit.primary.windowDurationMins 'Finestra principale'
+        $PrimaryTitle.Text = Get-WindowLabel $limit.primary.windowDurationMins 'Primary window'
         $PrimaryRemaining.Text = "$remaining%"
         $PrimaryProgress.Value = $used
         $PrimaryProgress.Foreground = Get-ProgressBrush $used
-        $PrimaryUsage.Text = "$used% usato · $remaining% disponibile"
+        $PrimaryUsage.Text = "$used% used · $remaining% available"
         $script:primaryResetAt = Convert-ResetTime $limit.primary.resetsAt
     }
 
@@ -246,11 +249,11 @@ function Set-WindowData($data) {
         $used = [math]::Max(0, [math]::Min(100, [int]$limit.secondary.usedPercent))
         $remaining = 100 - $used
         $SecondaryCard.Visibility = [Windows.Visibility]::Visible
-        $SecondaryTitle.Text = Get-WindowLabel $limit.secondary.windowDurationMins 'Finestra secondaria'
+        $SecondaryTitle.Text = Get-WindowLabel $limit.secondary.windowDurationMins 'Secondary window'
         $SecondaryRemaining.Text = "$remaining%"
         $SecondaryProgress.Value = $used
         $SecondaryProgress.Foreground = Get-ProgressBrush $used
-        $SecondaryUsage.Text = "$used% usato"
+        $SecondaryUsage.Text = "$used% used"
         $script:secondaryResetAt = Convert-ResetTime $limit.secondary.resetsAt
     } else {
         $SecondaryCard.Visibility = [Windows.Visibility]::Collapsed
@@ -273,14 +276,14 @@ function Set-WindowData($data) {
     }
 
     if ($null -eq $limit.credits) {
-        $CreditsText.Text = 'Crediti extra: non indicati'
+        $CreditsText.Text = 'Extra credits: unavailable'
     } elseif ($limit.credits.unlimited) {
-        $CreditsText.Text = 'Crediti extra: illimitati'
+        $CreditsText.Text = 'Extra credits: unlimited'
     } elseif ($limit.credits.hasCredits) {
-        $balance = if ([string]::IsNullOrWhiteSpace([string]$limit.credits.balance)) { 'disponibili' } else { $limit.credits.balance }
-        $CreditsText.Text = "Crediti extra: $balance"
+        $balance = if ([string]::IsNullOrWhiteSpace([string]$limit.credits.balance)) { 'available' } else { $limit.credits.balance }
+        $CreditsText.Text = "Extra credits: $balance"
     } else {
-        $CreditsText.Text = 'Crediti extra: nessuno'
+        $CreditsText.Text = 'Extra credits: none'
     }
 
     $resetCount = 0
@@ -313,7 +316,7 @@ function Start-UsageQuery {
     try {
         $codexPath = (Get-Command codex -CommandType Application -ErrorAction Stop).Source
     } catch {
-        $ErrorText.Text = 'Codex CLI non è presente nel PATH.'
+        $ErrorText.Text = 'Codex CLI was not found in PATH.'
         $ErrorBorder.Visibility = [Windows.Visibility]::Visible
         $script:nextRefresh = [DateTime]::Now.AddSeconds($RefreshSeconds)
         return
@@ -345,9 +348,9 @@ function Start-UsageQuery {
             while ([DateTime]::UtcNow -lt $deadline) {
                 $remainingMs = [math]::Max(1, [int]($deadline - [DateTime]::UtcNow).TotalMilliseconds)
                 $readTask = $process.StandardOutput.ReadLineAsync()
-                if (-not $readTask.Wait($remainingMs)) { throw 'Timeout durante la lettura da Codex.' }
+                if (-not $readTask.Wait($remainingMs)) { throw 'Timed out while reading from Codex.' }
                 $line = $readTask.Result
-                if ($null -eq $line) { throw 'Codex app-server ha chiuso la connessione.' }
+                if ($null -eq $line) { throw 'Codex app-server closed the connection.' }
                 $message = $line | ConvertFrom-Json
                 if ($message.id -eq 1) {
                     if ($null -ne $message.error) { throw [string]$message.error.message }
@@ -355,7 +358,7 @@ function Start-UsageQuery {
                     return
                 }
             }
-            throw 'Codex non ha risposto entro 15 secondi.'
+            throw 'Codex did not respond within 15 seconds.'
         } catch {
             [pscustomobject]@{ Success = $false; Json = $null; Error = $_.Exception.Message }
         } finally {
@@ -373,11 +376,11 @@ function Complete-UsageQuery {
 
     try {
         $result = Receive-Job -Job $script:queryJob -ErrorAction Stop | Select-Object -Last 1
-        if ($null -eq $result) { throw 'Nessun dato ricevuto dal processo di aggiornamento.' }
+        if ($null -eq $result) { throw 'No data received from the update process.' }
         if (-not $result.Success) { throw [string]$result.Error }
         Set-WindowData ($result.Json | ConvertFrom-Json)
     } catch {
-        $ErrorText.Text = "Impossibile aggiornare: $($_.Exception.Message)"
+        $ErrorText.Text = "Update failed: $($_.Exception.Message)"
         $ErrorBorder.Visibility = [Windows.Visibility]::Visible
     } finally {
         Remove-Job -Job $script:queryJob -Force -ErrorAction SilentlyContinue

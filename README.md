@@ -1,47 +1,52 @@
 # Codex Usage Viewer
 
-Una piccola finestra Windows che mostra la quota Codex disponibile usando il login già attivo di Codex CLI.
+A compact Windows widget that displays your available Codex quota using the
+active Codex CLI login.
 
-Il layout standard misura **360×154 px**, barra del titolo compresa. Se l'account
-restituisce una seconda finestra temporale, l'altezza aumenta a 186 px per non
-nascondere informazioni.
+The widget is **346 px wide** and automatically adjusts its height to the
+available information. The standard single-window layout is approximately
+**121 px high**. A secondary rate-limit window or an error message expands the
+widget without hiding information.
 
-## Avvio
+## Launch
 
-Fai doppio clic su `Start-CodexUsageViewer.vbs`. Il launcher avvia il widget
-senza mostrare o mantenere aperta una finestra di PowerShell/Windows Terminal.
+Double-click `Start-CodexUsageViewer.vbs`. The launcher starts the widget
+without displaying or keeping a PowerShell or Windows Terminal window open.
 
-Il file `Start-CodexUsageViewer.cmd` rimane disponibile come launcher alternativo
-e inoltra a sua volta l'avvio al launcher invisibile.
+`Start-CodexUsageViewer.cmd` is also available as an alternative launcher and
+forwards startup to the hidden launcher.
 
-La finestra mostra:
+The widget displays:
 
-- percentuale usata e disponibile per ogni finestra temporale restituita dall'account;
-- barra verde per la quota utilizzata e barra blu per il tempo residuo prima del
-  reset settimanale;
-- data, ora e conto alla rovescia del reset;
-- piano Codex, crediti extra ed eventuali reset gratuiti, inclusa la scadenza
-  del prossimo reset e il tempo rimanente;
-- aggiornamento automatico ogni 60 secondi, senza controlli visibili.
+- the used and available percentage for each rate-limit window returned by the account;
+- a green bar for used quota and a blue bar that fills as the weekly window elapses;
+- the reset date, time, and countdown;
+- the Codex plan, extra credits, and any available free resets, including the
+  next reset expiration and remaining time;
+- automatic refresh every 60 seconds, with no visible controls.
 
-Spostala sul secondo monitor: la posizione viene ricordata al prossimo avvio.
+Drag the compact title area to move the widget. Its position is restored the
+next time it starts, including when placed on a second monitor.
 
-## Avvio da PowerShell
+## Launch from PowerShell
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -STA -File .\CodexUsageViewer.ps1
 ```
 
-Per cambiare l'intervallo di aggiornamento (minimo 15 secondi):
+To change the refresh interval (minimum 15 seconds):
 
 ```powershell
 .\CodexUsageViewer.ps1 -RefreshSeconds 30
 ```
 
-## Requisiti e privacy
+## Requirements and privacy
 
-- Windows PowerShell 5.1 o PowerShell 7 su Windows;
-- Codex CLI installata, nel `PATH` e con login attivo;
-- una versione di Codex CLI che esponga `codex app-server` e `account/rateLimits/read`.
+- Windows PowerShell 5.1 or PowerShell 7 on Windows;
+- Codex CLI installed, available in `PATH`, and signed in;
+- a Codex CLI version that exposes `codex app-server` and `account/rateLimits/read`.
 
-Il viewer non legge né salva token, password o API key. Avvia localmente `codex app-server`, richiede lo snapshot dei limiti e chiude subito il processo. Le sole impostazioni salvate in `%LOCALAPPDATA%\CodexUsageViewer` sono le coordinate della finestra.
+The viewer does not read or store tokens, passwords, or API keys. It starts
+`codex app-server` locally, requests a rate-limit snapshot, and immediately
+closes the process. The only settings saved in
+`%LOCALAPPDATA%\CodexUsageViewer` are the window coordinates.
