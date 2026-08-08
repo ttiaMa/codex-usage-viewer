@@ -13,9 +13,10 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 [xml]$xaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Codex Usage" Width="360" Height="154" MinWidth="360" MaxWidth="360"
-        WindowStartupLocation="CenterScreen" Background="#0B0F14" Foreground="#F5F7FA"
-        FontFamily="Segoe UI" ResizeMode="NoResize" ShowInTaskbar="True"
+        Title="Codex Usage" Width="346" MinWidth="346" MaxWidth="346" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen" Background="Transparent" Foreground="#F5F7FA"
+        FontFamily="Segoe UI" WindowStyle="None" AllowsTransparency="True"
+        ResizeMode="NoResize" ShowInTaskbar="True"
         UseLayoutRounding="True" SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
   <Window.Resources>
@@ -32,7 +33,24 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
     </Style>
   </Window.Resources>
 
-  <Grid Margin="9,7,9,7">
+  <Border Background="#0B0F14" BorderBrush="#394655" BorderThickness="1" CornerRadius="7">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="18"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0">
+      <Border x:Name="DragArea" Background="Transparent" Margin="8,0,24,0">
+        <TextBlock Text="Codex Usage" Foreground="#9AA7B8" FontSize="9"/>
+      </Border>
+      <Button x:Name="CloseButton" Content="×" Width="24" Height="18" HorizontalAlignment="Right"
+              Padding="0" BorderThickness="0" Background="Transparent" Foreground="#9AA7B8"
+              FontFamily="Segoe UI" FontSize="13" FontWeight="SemiBold" Cursor="Hand"
+              ToolTip="Chiudi"/>
+    </Grid>
+
+  <Grid Grid.Row="1" Margin="8,4,8,6">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
@@ -41,12 +59,12 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
     </Grid.RowDefinitions>
 
     <Border x:Name="ErrorBorder" Grid.Row="0" Background="#421C25" BorderBrush="#793243"
-            BorderThickness="1" CornerRadius="5" Padding="6,3" Margin="0,0,0,4" Visibility="Collapsed">
+            BorderThickness="1" CornerRadius="5" Padding="8,4" Margin="0,0,0,6" Visibility="Collapsed">
       <TextBlock x:Name="ErrorText" Foreground="#FFB3C1" FontSize="9"/>
     </Border>
 
     <Border Grid.Row="1" Background="#151B23" BorderBrush="#263140" BorderThickness="1"
-            CornerRadius="7" Padding="8,5" Margin="0,0,0,4">
+            CornerRadius="7" Padding="8,6" Margin="0,0,0,6">
       <StackPanel>
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -57,7 +75,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
           <TextBlock Grid.Column="2" x:Name="PrimaryRemaining" Text="—" FontSize="20" FontWeight="Bold"/>
         </Grid>
         <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,2" ToolTip="Quota Codex utilizzata"/>
-        <ProgressBar x:Name="WeeklyResetProgress" Value="0" Height="4" Foreground="#629BFF" Margin="0,0,0,3"
+        <ProgressBar x:Name="WeeklyResetProgress" Value="0" Height="4" Foreground="#629BFF" Margin="0,0,0,4"
                      ToolTip="Avanzamento della settimana fino al prossimo reset"/>
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
@@ -68,7 +86,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
     </Border>
 
     <Border x:Name="SecondaryCard" Grid.Row="2" Background="#151B23" BorderBrush="#263140" BorderThickness="1"
-            CornerRadius="6" Padding="7,3" Margin="0,0,0,4" Visibility="Collapsed">
+            CornerRadius="6" Padding="8,4" Margin="0,0,0,6" Visibility="Collapsed">
       <Grid>
         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
         <TextBlock x:Name="SecondaryTitle" Text="Secondaria" Foreground="#B8C2CF" FontSize="10" Margin="0,0,6,0"/>
@@ -81,13 +99,15 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
       </Grid>
     </Border>
 
-    <Grid Grid.Row="3" Margin="2,0,2,3">
+    <Grid Grid.Row="3" Margin="2,0,2,0">
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
       <TextBlock x:Name="CreditsText" Text="Crediti: —" Foreground="#C4CEDA" FontSize="10"/>
       <TextBlock Grid.Column="1" x:Name="ResetCreditsText" Text="" Foreground="#69E6B3" FontSize="9" FontWeight="SemiBold" Visibility="Collapsed"/>
     </Grid>
 
   </Grid>
+  </Grid>
+  </Border>
 </Window>
 '@
 
@@ -98,8 +118,17 @@ $window = [Windows.Markup.XamlReader]::Load($reader)
     'PlanText', 'ErrorBorder', 'ErrorText', 'PrimaryTitle', 'PrimaryRemaining',
     'PrimaryProgress', 'WeeklyResetProgress', 'PrimaryUsage', 'PrimaryReset', 'SecondaryCard',
     'SecondaryTitle', 'SecondaryRemaining', 'SecondaryProgress', 'SecondaryUsage',
-    'SecondaryReset', 'CreditsText', 'ResetCreditsText'
+    'SecondaryReset', 'CreditsText', 'ResetCreditsText', 'DragArea', 'CloseButton'
 ) | ForEach-Object { Set-Variable -Name $_ -Value $window.FindName($_) -Scope Script }
+
+$DragArea.Add_MouseLeftButtonDown({
+    param($sender, $eventArgs)
+    if ($eventArgs.ButtonState -eq [Windows.Input.MouseButtonState]::Pressed) {
+        try { $window.DragMove() } catch { }
+    }
+})
+
+$CloseButton.Add_Click({ $window.Close() })
 
 $script:queryJob = $null
 $script:nextRefresh = [DateTime]::MinValue
@@ -223,11 +252,9 @@ function Set-WindowData($data) {
         $SecondaryProgress.Foreground = Get-ProgressBrush $used
         $SecondaryUsage.Text = "$used% usato"
         $script:secondaryResetAt = Convert-ResetTime $limit.secondary.resetsAt
-        $window.Height = 186
     } else {
         $SecondaryCard.Visibility = [Windows.Visibility]::Collapsed
         $script:secondaryResetAt = $null
-        $window.Height = 154
     }
 
     $candidateWindows = @()
