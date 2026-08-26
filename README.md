@@ -5,8 +5,8 @@ active Codex CLI login.
 
 The widget is **346 px wide** and automatically adjusts its height to the
 available information. The standard single-window layout is approximately
-**121 px high**. A secondary rate-limit window or an error message expands the
-widget without hiding information.
+**95 px high**, or approximately **171 px** with both rate-limit windows.
+An error message expands the widget without hiding information.
 
 ## Launch
 
@@ -19,10 +19,11 @@ forwards startup to the hidden launcher.
 The widget displays:
 
 - the used and available percentage for each rate-limit window returned by the account;
-- a green bar for used quota and a blue bar that fills as the weekly window elapses;
+- a prominent weekly window with separate usage and time-elapsed bars;
+- a compact short window with its usage bar, remaining percentage, and reset time;
 - the reset date, time, and countdown;
 - the Codex plan, extra credits, and any available free resets, including the
-  next reset expiration and remaining time;
+  next reset expiration date and exact time;
 - automatic refresh every 60 seconds, with no visible controls.
 
 Drag the compact title area to move the widget. Its position is restored the

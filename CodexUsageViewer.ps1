@@ -25,7 +25,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
     <Style TargetType="ProgressBar">
-      <Setter Property="Height" Value="5"/>
+      <Setter Property="Height" Value="4"/>
       <Setter Property="Minimum" Value="0"/>
       <Setter Property="Maximum" Value="100"/>
       <Setter Property="Background" Value="#263140"/>
@@ -42,7 +42,11 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 
     <Grid Grid.Row="0">
       <Border x:Name="DragArea" Background="Transparent" Margin="8,0,24,0">
-        <TextBlock Text="Codex Usage" Foreground="#9AA7B8" FontSize="9"/>
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="Codex Usage" Foreground="#9AA7B8" FontSize="9"/>
+          <TextBlock Text=" · " Foreground="#556273" FontSize="8"/>
+          <TextBlock x:Name="PlanText" Text="—" Foreground="#69E6B3" FontSize="8" FontWeight="SemiBold"/>
+        </StackPanel>
       </Border>
       <Button x:Name="CloseButton" Content="×" Width="24" Height="18" HorizontalAlignment="Right"
               Padding="0" BorderThickness="0" Background="Transparent" Foreground="#9AA7B8"
@@ -50,9 +54,8 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
               ToolTip="Close"/>
     </Grid>
 
-  <Grid Grid.Row="1" Margin="8,4,8,6">
+  <Grid Grid.Row="1" Margin="8,3,8,5">
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
@@ -64,45 +67,61 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
     </Border>
 
     <Border Grid.Row="1" Background="#151B23" BorderBrush="#263140" BorderThickness="1"
-            CornerRadius="7" Padding="8,6" Margin="0,0,0,6">
+            CornerRadius="7" Padding="9,7" Margin="0,0,0,4">
       <StackPanel>
-        <Grid>
-          <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-          <Border Background="#15382F" CornerRadius="7" Padding="6,2" Margin="0,0,7,0">
-            <TextBlock x:Name="PlanText" Text="—" Foreground="#69E6B3" FontSize="9" FontWeight="Bold"/>
-          </Border>
-          <TextBlock Grid.Column="1" x:Name="PrimaryTitle" Text="Primary window" Foreground="#B8C2CF" FontSize="11"/>
-          <TextBlock Grid.Column="2" x:Name="PrimaryRemaining" Text="—" FontSize="20" FontWeight="Bold"/>
-        </Grid>
-        <ProgressBar x:Name="PrimaryProgress" Value="0" Foreground="#5AD6A0" Margin="0,4,0,2" ToolTip="Codex quota used"/>
-        <ProgressBar x:Name="WeeklyResetProgress" Value="0" Height="4" Foreground="#629BFF" Margin="0,0,0,4"
-                     ToolTip="Weekly progress until the next reset"/>
-        <Grid>
-          <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-          <TextBlock x:Name="PrimaryUsage" Text="Loading…" Foreground="#E0E6EE" FontSize="10"/>
-          <TextBlock Grid.Column="1" x:Name="PrimaryReset" Text="" Foreground="#78A9FF" FontSize="10" HorizontalAlignment="Right"/>
-        </Grid>
+        <StackPanel x:Name="SecondaryCard" Visibility="Collapsed">
+          <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TextBlock x:Name="SecondaryTitle" Text="7 days" Foreground="#78A9FF"
+                       FontSize="11" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="1" Text="&#xE787;" FontFamily="Segoe MDL2 Assets"
+                       Foreground="#8FA9BF" FontSize="13"/>
+          </Grid>
+          <Grid Margin="0,1,0,0">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TextBlock x:Name="SecondaryRemaining" Text="—" Foreground="#F5F7FA"
+                       FontSize="22" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="1" x:Name="SecondaryUsed" Text="" Foreground="#5AD6A0"
+                       FontSize="9" FontWeight="SemiBold" VerticalAlignment="Bottom" Margin="0,0,0,3"/>
+          </Grid>
+          <ProgressBar x:Name="SecondaryProgress" Value="0" Height="6" Foreground="#5AD6A0"
+                       Margin="0,3,0,0" ToolTip="Codex quota used"/>
+          <ProgressBar x:Name="SecondaryTimeProgress" Value="0" Height="6" Foreground="#629BFF"
+                       Margin="0,2,0,3" ToolTip="Time elapsed in this window"/>
+          <TextBlock x:Name="SecondaryReset" Text="" Foreground="#9AA7B8" FontSize="9"/>
+        </StackPanel>
+
+        <Border x:Name="PrimarySection" BorderBrush="#303A47" BorderThickness="0,1,0,0"
+                Margin="0,6,0,0" Padding="0,5,0,0">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="20"/>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" Foreground="#8FA9BF" FontSize="13"/>
+            <TextBlock Grid.Column="1" x:Name="PrimaryTitle" Text="5h" Foreground="#F5F7FA"
+                       FontSize="10" FontWeight="SemiBold"/>
+            <ProgressBar Grid.Column="2" x:Name="PrimaryProgress" Value="0" Height="5"
+                         Foreground="#5AD6A0" Margin="9,0,10,0" VerticalAlignment="Center"
+                         ToolTip="Codex quota used"/>
+            <StackPanel Grid.Column="3">
+              <TextBlock x:Name="PrimaryRemaining" Text="—" Foreground="#F5F7FA"
+                         FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+              <TextBlock x:Name="PrimaryReset" Text="Loading…" Foreground="#9AA7B8"
+                         FontSize="9" HorizontalAlignment="Right"/>
+            </StackPanel>
+          </Grid>
+        </Border>
       </StackPanel>
     </Border>
 
-    <Border x:Name="SecondaryCard" Grid.Row="2" Background="#151B23" BorderBrush="#263140" BorderThickness="1"
-            CornerRadius="6" Padding="8,4" Margin="0,0,0,6" Visibility="Collapsed">
-      <Grid>
-        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-        <TextBlock x:Name="SecondaryTitle" Text="Secondary" Foreground="#B8C2CF" FontSize="10" Margin="0,0,6,0"/>
-        <ProgressBar Grid.Column="1" x:Name="SecondaryProgress" Value="0" Foreground="#5AD6A0" VerticalAlignment="Center"/>
-        <TextBlock Grid.Column="2" x:Name="SecondaryReset" Text="" Foreground="#9AA7B8" FontSize="9" Margin="6,0,0,0"/>
-        <StackPanel Grid.Column="3" Orientation="Horizontal">
-          <TextBlock x:Name="SecondaryUsage" Text="" Foreground="#E0E6EE" FontSize="9" Margin="0,0,5,0"/>
-          <TextBlock x:Name="SecondaryRemaining" Text="—" FontSize="12" FontWeight="Bold"/>
-        </StackPanel>
-      </Grid>
-    </Border>
-
-    <Grid Grid.Row="3" Margin="2,0,2,0">
-      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <TextBlock x:Name="CreditsText" Text="Credits: —" Foreground="#C4CEDA" FontSize="10"/>
-      <TextBlock Grid.Column="1" x:Name="ResetCreditsText" Text="" Foreground="#69E6B3" FontSize="9" FontWeight="SemiBold" Visibility="Collapsed"/>
+    <Grid Grid.Row="2" Margin="9,0,9,0">
+      <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+      <TextBlock x:Name="CreditsText" Text="Extra credits: —" Foreground="#C4CEDA" FontSize="9"/>
+      <TextBlock Grid.Column="2" x:Name="ResetCreditsText" Text="" Foreground="#9AA7B8"
+                 FontSize="9" FontWeight="SemiBold" Margin="7,0,0,0" Visibility="Collapsed"/>
     </Grid>
 
   </Grid>
@@ -116,8 +135,9 @@ $window = [Windows.Markup.XamlReader]::Load($reader)
 
 @(
     'PlanText', 'ErrorBorder', 'ErrorText', 'PrimaryTitle', 'PrimaryRemaining',
-    'PrimaryProgress', 'WeeklyResetProgress', 'PrimaryUsage', 'PrimaryReset', 'SecondaryCard',
-    'SecondaryTitle', 'SecondaryRemaining', 'SecondaryProgress', 'SecondaryUsage',
+    'PrimarySection', 'PrimaryProgress', 'PrimaryReset', 'SecondaryCard',
+    'SecondaryTitle', 'SecondaryRemaining', 'SecondaryUsed',
+    'SecondaryProgress', 'SecondaryTimeProgress',
     'SecondaryReset', 'CreditsText', 'ResetCreditsText', 'DragArea', 'CloseButton'
 ) | ForEach-Object { Set-Variable -Name $_ -Value $window.FindName($_) -Scope Script }
 
@@ -134,30 +154,37 @@ $script:queryJob = $null
 $script:nextRefresh = [DateTime]::MinValue
 $script:primaryResetAt = $null
 $script:secondaryResetAt = $null
-$script:weeklyResetAt = $null
-$script:weeklyWindowMinutes = $null
+$script:primaryWindowMinutes = $null
+$script:secondaryWindowMinutes = $null
 $script:resetCreditCount = 0
 $script:resetCreditExpiresAt = $null
 
 $settingsDir = Join-Path $env:LOCALAPPDATA 'CodexUsageViewer'
 $settingsPath = Join-Path $settingsDir 'settings.json'
 
-function Get-WindowLabel($minutes, [string]$fallback) {
+function Get-FeaturedWindowLabel($minutes, [string]$fallback) {
     if ($null -eq $minutes) { return $fallback }
     $minuteCount = [long]$minutes
-    if ($minuteCount -eq 60) { return '1-hour window' }
     if (($minuteCount % 1440) -eq 0) {
         $days = [int]($minuteCount / 1440)
-        if ($days -eq 1) { return '1-day window' }
-        return "$days-day window"
+        if ($days -eq 1) { return '1 day' }
+        return "$days days"
     }
     if (($minuteCount % 60) -eq 0) {
         $hours = [int]($minuteCount / 60)
-        if ($hours -eq 1) { return '1-hour window' }
-        return "$hours-hour window"
+        if ($hours -eq 1) { return '1 hour' }
+        return "$hours hours"
     }
-    if ($minuteCount -eq 1) { return '1-minute window' }
-    return "$minuteCount-minute window"
+    if ($minuteCount -eq 1) { return '1 minute' }
+    return "$minuteCount minutes"
+}
+
+function Get-CompactWindowLabel($minutes, [string]$fallback) {
+    if ($null -eq $minutes) { return $fallback }
+    $minuteCount = [long]$minutes
+    if (($minuteCount % 1440) -eq 0) { return ('{0}d' -f [int]($minuteCount / 1440)) }
+    if (($minuteCount % 60) -eq 0) { return ('{0}h' -f [int]($minuteCount / 60)) }
+    return "${minuteCount}m"
 }
 
 function Get-ProgressBrush([int]$usedPercent) {
@@ -171,47 +198,57 @@ function Convert-ResetTime($unixSeconds) {
     return [DateTimeOffset]::FromUnixTimeSeconds([long]$unixSeconds).ToLocalTime()
 }
 
-function Format-ResetCountdown($resetAt) {
+function Format-ResetCountdown($resetAt, [bool]$includeDate = $false) {
     if ($null -eq $resetAt) { return 'Reset unavailable' }
     $remaining = $resetAt - [DateTimeOffset]::Now
     if ($remaining.TotalSeconds -le 0) { return 'Resetting…' }
-    if ($remaining.TotalDays -ge 1) {
-        return ('Reset {0:MM/dd HH:mm} · {1}d {2}h' -f $resetAt, [math]::Floor($remaining.TotalDays), $remaining.Hours)
+    $duration = if ($remaining.TotalDays -ge 1) {
+        '{0}d {1}h' -f [math]::Floor($remaining.TotalDays), $remaining.Hours
+    } elseif ($remaining.TotalHours -ge 1) {
+        '{0}h {1}m' -f [math]::Floor($remaining.TotalHours), $remaining.Minutes
+    } else {
+        '{0}m' -f [math]::Max(1, [math]::Ceiling($remaining.TotalMinutes))
     }
-    if ($remaining.TotalHours -ge 1) {
-        return ('Reset {0:HH:mm} · {1}h {2}m' -f $resetAt, [math]::Floor($remaining.TotalHours), $remaining.Minutes)
+    if ($includeDate) {
+        $resetDate = $resetAt.ToString('MMM d, HH:mm', [Globalization.CultureInfo]::InvariantCulture)
+        return "$duration left · resets $resetDate"
     }
-    return ('Reset {0:HH:mm} · {1}m' -f $resetAt, [math]::Max(1, [math]::Ceiling($remaining.TotalMinutes)))
+    return ('Resets in {0} · {1:HH:mm}' -f $duration, $resetAt)
 }
 
 function Format-CreditExpiry($expiresAt) {
     if ($null -eq $expiresAt) { return $null }
-    $remaining = $expiresAt - [DateTimeOffset]::Now
-    if ($remaining.TotalSeconds -le 0) { return 'expiring now' }
-    if ($remaining.TotalDays -ge 1) {
-        return ('exp. {0:MM/dd HH:mm} · {1}d {2}h' -f $expiresAt, [math]::Floor($remaining.TotalDays), $remaining.Hours)
+    if (($expiresAt - [DateTimeOffset]::Now).TotalSeconds -le 0) { return 'expiring now' }
+    return 'exp. ' + $expiresAt.ToString('MMM d, HH:mm', [Globalization.CultureInfo]::InvariantCulture)
+}
+
+function Format-CompactReset($resetAt) {
+    if ($null -eq $resetAt) { return 'reset unavailable' }
+    if (($resetAt - [DateTimeOffset]::Now).TotalSeconds -le 0) { return 'resetting…' }
+    return ('resets {0:HH:mm}' -f $resetAt)
+}
+
+function Update-TimeProgress($progressBar, $resetAt, $windowMinutes) {
+    if ($null -eq $resetAt -or $null -eq $windowMinutes -or $windowMinutes -le 0) {
+        $progressBar.Value = 0
+        $progressBar.ToolTip = 'Window timing unavailable from Codex'
+        return
     }
-    if ($remaining.TotalHours -ge 1) {
-        return ('exp. {0:HH:mm} · {1}h {2}m' -f $expiresAt, [math]::Floor($remaining.TotalHours), $remaining.Minutes)
-    }
-    return ('exp. {0:HH:mm} · {1}m' -f $expiresAt, [math]::Max(1, [math]::Ceiling($remaining.TotalMinutes)))
+
+    $windowSeconds = [double]$windowMinutes * 60
+    $remainingSeconds = ($resetAt - [DateTimeOffset]::Now).TotalSeconds
+    $remainingPercent = [math]::Max(0, [math]::Min(100, ($remainingSeconds / $windowSeconds) * 100))
+    $elapsedPercent = 100 - $remainingPercent
+    $progressBar.Value = $elapsedPercent
+    $progressBar.ToolTip = 'Time elapsed: {0:N0}% · {1:N0}% remaining' -f $elapsedPercent, $remainingPercent
 }
 
 function Update-Countdowns {
-    $PrimaryReset.Text = Format-ResetCountdown $script:primaryResetAt
-    if ($null -ne $script:weeklyResetAt -and $null -ne $script:weeklyWindowMinutes -and $script:weeklyWindowMinutes -gt 0) {
-        $remainingSeconds = ($script:weeklyResetAt - [DateTimeOffset]::Now).TotalSeconds
-        $windowSeconds = [double]$script:weeklyWindowMinutes * 60
-        $remainingPercent = [math]::Max(0, [math]::Min(100, ($remainingSeconds / $windowSeconds) * 100))
-        $elapsedPercent = 100 - $remainingPercent
-        $WeeklyResetProgress.Value = $elapsedPercent
-        $WeeklyResetProgress.ToolTip = 'Week elapsed: {0:N0}%' -f $elapsedPercent
-    } else {
-        $WeeklyResetProgress.Value = 0
-        $WeeklyResetProgress.ToolTip = 'Weekly reset unavailable from Codex'
-    }
+    $PrimaryReset.Text = Format-CompactReset $script:primaryResetAt
     if ($SecondaryCard.Visibility -eq [Windows.Visibility]::Visible) {
-        $SecondaryReset.Text = Format-ResetCountdown $script:secondaryResetAt
+        $secondaryIncludesDate = $null -ne $script:secondaryWindowMinutes -and $script:secondaryWindowMinutes -ge 1440
+        $SecondaryReset.Text = Format-ResetCountdown $script:secondaryResetAt $secondaryIncludesDate
+        Update-TimeProgress $SecondaryTimeProgress $script:secondaryResetAt $script:secondaryWindowMinutes
     }
     if ($script:resetCreditCount -gt 0) {
         $label = if ($script:resetCreditCount -eq 1) { '1 reset avail.' } else { "$($script:resetCreditCount) resets avail." }
@@ -237,42 +274,41 @@ function Set-WindowData($data) {
     if ($null -ne $limit.primary) {
         $used = [math]::Max(0, [math]::Min(100, [int]$limit.primary.usedPercent))
         $remaining = 100 - $used
-        $PrimaryTitle.Text = Get-WindowLabel $limit.primary.windowDurationMins 'Primary window'
-        $PrimaryRemaining.Text = "$remaining%"
+        $PrimaryTitle.Text = Get-CompactWindowLabel $limit.primary.windowDurationMins 'Primary'
+        $PrimaryRemaining.Text = "$remaining% left"
         $PrimaryProgress.Value = $used
-        $PrimaryProgress.Foreground = Get-ProgressBrush $used
-        $PrimaryUsage.Text = "$used% used · $remaining% available"
+        $usageBrush = Get-ProgressBrush $used
+        $PrimaryProgress.Foreground = $usageBrush
+        $PrimaryProgress.ToolTip = "$used% used · $remaining% remaining"
         $script:primaryResetAt = Convert-ResetTime $limit.primary.resetsAt
+        $script:primaryWindowMinutes = if ($null -ne $limit.primary.windowDurationMins) { [long]$limit.primary.windowDurationMins } else { $null }
     }
 
     if ($null -ne $limit.secondary) {
         $used = [math]::Max(0, [math]::Min(100, [int]$limit.secondary.usedPercent))
         $remaining = 100 - $used
         $SecondaryCard.Visibility = [Windows.Visibility]::Visible
-        $SecondaryTitle.Text = Get-WindowLabel $limit.secondary.windowDurationMins 'Secondary window'
-        $SecondaryRemaining.Text = "$remaining%"
+        $PrimarySection.BorderThickness = [Windows.Thickness]::new(0, 1, 0, 0)
+        $PrimarySection.Margin = [Windows.Thickness]::new(0, 6, 0, 0)
+        $PrimarySection.Padding = [Windows.Thickness]::new(0, 5, 0, 0)
+        $SecondaryTitle.Text = Get-FeaturedWindowLabel $limit.secondary.windowDurationMins 'Secondary window'
+        $SecondaryRemaining.Text = "$remaining% left"
+        $SecondaryUsed.Text = "$used% used"
         $SecondaryProgress.Value = $used
-        $SecondaryProgress.Foreground = Get-ProgressBrush $used
-        $SecondaryUsage.Text = "$used% used"
+        $usageBrush = Get-ProgressBrush $used
+        $SecondaryProgress.Foreground = $usageBrush
+        $SecondaryUsed.Foreground = $usageBrush
+        $SecondaryProgress.ToolTip = "$used% used · $remaining% remaining"
         $script:secondaryResetAt = Convert-ResetTime $limit.secondary.resetsAt
+        $script:secondaryWindowMinutes = if ($null -ne $limit.secondary.windowDurationMins) { [long]$limit.secondary.windowDurationMins } else { $null }
     } else {
         $SecondaryCard.Visibility = [Windows.Visibility]::Collapsed
+        $PrimarySection.BorderThickness = [Windows.Thickness]::new(0)
+        $PrimarySection.Margin = [Windows.Thickness]::new(0)
+        $PrimarySection.Padding = [Windows.Thickness]::new(0)
+        $SecondaryTimeProgress.Value = 0
         $script:secondaryResetAt = $null
-    }
-
-    $candidateWindows = @()
-    if ($null -ne $limit.primary) { $candidateWindows += $limit.primary }
-    if ($null -ne $limit.secondary) { $candidateWindows += $limit.secondary }
-    $weeklyWindow = $candidateWindows |
-        Where-Object { $null -ne $_.windowDurationMins -and [long]$_.windowDurationMins -ge 1440 } |
-        Sort-Object { [long]$_.windowDurationMins } -Descending |
-        Select-Object -First 1
-    if ($null -ne $weeklyWindow) {
-        $script:weeklyWindowMinutes = [long]$weeklyWindow.windowDurationMins
-        $script:weeklyResetAt = Convert-ResetTime $weeklyWindow.resetsAt
-    } else {
-        $script:weeklyWindowMinutes = $null
-        $script:weeklyResetAt = $null
+        $script:secondaryWindowMinutes = $null
     }
 
     if ($null -eq $limit.credits) {
