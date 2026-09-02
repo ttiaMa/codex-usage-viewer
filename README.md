@@ -20,6 +20,19 @@ without displaying or keeping a PowerShell or Windows Terminal window open.
 `Start-CodexUsageViewer.cmd` is also available as an alternative launcher and
 forwards startup to the hidden launcher.
 
+## Start automatically with Windows
+
+1. Press <kbd>Win</kbd> + <kbd>R</kbd>, enter `shell:startup`, and press
+   <kbd>Enter</kbd>.
+2. In the Startup folder, right-click and select **New > Shortcut**.
+3. Select `Start-CodexUsageViewer.vbs` from this project folder as the shortcut
+   target.
+4. Name the shortcut `Codex Usage Viewer` and finish the wizard.
+
+The widget will start automatically the next time you sign in to Windows. Keep
+the project folder in the same location after creating the shortcut; if you
+move it, recreate the shortcut with the new path.
+
 The widget displays:
 
 - the used and available percentage for each rate-limit window returned by the account;
