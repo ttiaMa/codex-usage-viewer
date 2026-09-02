@@ -3,6 +3,10 @@
 A compact Windows widget that displays your available Codex quota using the
 active Codex CLI login.
 
+<p align="center">
+  <img src="assets/widget-preview.png" alt="Codex Usage Viewer widget showing weekly and five-hour rate-limit windows" width="346">
+</p>
+
 The widget is **346 px wide** and automatically adjusts its height to the
 available information. The standard single-window layout is approximately
 **95 px high**, or approximately **171 px** with both rate-limit windows.
